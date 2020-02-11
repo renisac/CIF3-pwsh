@@ -20,6 +20,12 @@ Load the module:
 Import-Module CIF3
 ```
 
+See what functions are available:
+
+```powershell
+Get-Command -Module CIF3
+```
+
 If you have an existing .cif.yml in your $env:HOME dir, its contents will be read and used automatically. If you've never setup your config file (.cif.yml) before, do so now. At a minimum you must set the Uri and Token parameters.
 
 ```powershell
