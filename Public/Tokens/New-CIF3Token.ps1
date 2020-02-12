@@ -125,18 +125,14 @@ function New-CIF3Token {
         $Params.Token = $Token
         
         $Response = Send-CIF3Api @Params -ErrorAction Stop
-        
+
         if ($Raw) {
             return $Response
-        } elseif ($Response.message -eq 'success') {
-            return Format-CIF3ApiResponse -InputObject $Response.data
-        } elseif ($Response.message -eq 'failed') {
-            Write-Error -Message "CIF API call failed: $Response"
-        } elseif ($Response.message -eq 'missing data') {
-            Write-Error -Message "CIF API call was missing some data: $Response"
-        } else {
-            Write-Error -Message "CIF API call succeeded, but responded with incorrect value: $_"
+        } 
+        else { 
+            return Format-CIF3ApiResponse -InputObject $Response 
         }
+       
     }
 
     end {}

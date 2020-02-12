@@ -11,7 +11,22 @@ function ConvertFrom-PythonDate {
     }
     process { 
         if ($null -ne $Date -and $Date -ne '') {
-            Write-Output ([datetime]::ParseExact($Date, 'yyyy-MM-ddTHH:mm:ss.ffffffZ', $Culture))
+            # sometimes jokers use various date formats on the submitted indicators.
+            # try yyyy-MM-ddTHH:mm:ss first (e.g.: 2020-02-12T08:12:23Z)
+            try {
+                # regardless whether we're given 0 digits of milliseconds or 6, always trim after seconds, tack on Zulu, 
+                # and move on with formatting
+                Write-Output ([datetime]::ParseExact($Date.Substring(0, 19) + 'Z', 'yyyy-MM-ddTHH:mm:ssZ', $Culture))
+            }
+            catch { }
+            # try MM/dd/yyyy HH:mm:ssZ (e.g.: 02/12/2020 08:12:23Z)
+            try {
+                # regardless whether we're given 0 digits of milliseconds or 6, always trim after seconds, tack on Zulu, 
+                # and move on with formatting
+                Write-Output ([datetime]::ParseExact($Date.Substring(0, 19) + 'Z', 'MM/dd/yyyy HH:mm:ssZ', $Culture))
+            }
+            catch { }
+            
         }  
     }
 

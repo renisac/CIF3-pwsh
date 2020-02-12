@@ -1,6 +1,6 @@
 # CIFv3 API PowerShell Wrapper
 
-Collective Intelligence Framework (CIF) is a threat intelligence framework. This project is a CIFv3 client for PowerShell.
+Collective Intelligence Framework (CIF) is a threat intelligence framework. This project is a CIFv3 client for PowerShell Core and Windows PowerShell.
 
 <https://csirtgadgets.com/collective-intelligence-framework>
 

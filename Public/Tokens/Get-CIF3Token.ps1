@@ -78,11 +78,9 @@ function Get-CIF3Token {
         
         if ($Raw) {
             return $Response
-        } elseif ($null -ne $Response.data) {
-                Write-Verbose 'Received response from CIF API'
-                return Format-CIF3ApiResponse -InputObject $Response.data
-        } else {
-            Write-Error -Message "CIF API call succeeded, but responded with incorrect value: $_"
+        } 
+        else { 
+            return Format-CIF3ApiResponse -InputObject $Response 
         }
     }
 }

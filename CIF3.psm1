@@ -13,7 +13,7 @@ foreach ($Import in @($Public + $Private)) {
 }
 
 # Create / Read config
-$Script:_CIF3YmlPath = Join-Path -Path "${env:HOMEDRIVE}${env:HOMEPATH}" -ChildPath '.cif.yml'
+$Script:_CIF3YmlPath = Join-Path -Path $Home -ChildPath '.cif.yml'
 if (-not (Test-Path -Path $Script:_CIF3YmlPath -ErrorAction SilentlyContinue)) {
     try {
         Write-Warning "Did not find config file $($Script:_CIF3YmlPath), attempting to create"

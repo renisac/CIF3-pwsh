@@ -95,7 +95,7 @@ function Send-CIF3Api {
         }
         $Headers.Authorization = "Token token=$Token"
         $Headers.Accept = 'application/vnd.cif.v3+json'
-        $Headers.'User-Agent' = "CIF3/${MyInvocation.MyCommand.Module.Version} (PowerShell Wrapper)"
+        $Headers.'User-Agent' = "CIF3/$($MyInvocation.MyCommand.Module.Version) (PowerShell Wrapper)"
 
     }
 
@@ -139,10 +139,9 @@ function Send-CIF3Api {
             elseif ($_.Exception.Response.StatusCode -eq 422) {
                 Write-Error -Exception $_.Exception -Message 'Server returned 422 run time error. Check CIF instance logs for more info.'
             }
-            elseif ($null -ne $_.ErrorDetails.Message) {
+            elseif ($null -ne $_.ErrorDetails.Message -and $_.ErrorDetails.Message -ne '') {
                 # Convert the error-message to an object. (Invoke-RestMethod will not return data by-default if a 4xx/5xx status code is generated.)
-                $_.ErrorDetails.Message | ConvertFrom-Json -ErrorAction Stop
-    
+                $_.ErrorDetails.Message
             }
             else {
                 Write-Error -Exception $_.Exception -Message "CIFv3 API call failed: $_. Check remote Uri?"

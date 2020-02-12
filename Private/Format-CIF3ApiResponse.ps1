@@ -11,6 +11,25 @@ function Format-CIF3ApiResponse {
     )
 
     begin { 
+        
+        if ($Response.status -eq 'failed') {
+            Write-Error -Message "Connected to CIF API, but got a failed status: $($Response.message)"
+            break
+        }
+        elseif ($Response.message -eq 'missing data') {
+            Write-Error -Message "CIF API call was missing some data: $Response"
+            break
+        }
+        elseif ($Response.message -eq 'success' -or $null -ne $Response.data) {
+            Write-Verbose 'Received response from CIF API'
+            # set InputObject to 'data' property of Invoke-RestMethod return object for further processing
+            $InputObject = $InputObject.data
+        } 
+        else {
+            Write-Error -Message "CIF API call succeeded, but responded with incorrect value: $Response"
+            break
+        }
+        # if we made it this far, go ahead and setup stuff we'll need for processing
         $TextInfo = (Get-Culture).TextInfo
     }
 
