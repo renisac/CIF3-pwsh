@@ -12,21 +12,28 @@ function Format-CIF3ApiResponse {
 
     begin { 
         
-        if ($Response.status -eq 'failed') {
-            Write-Error -Message "Connected to CIF API, but got a failed status: $($Response.message)"
-            break
-        }
-        elseif ($Response.message -eq 'missing data') {
-            Write-Error -Message "CIF API call was missing some data: $Response"
-            break
-        }
-        elseif ($Response.message -eq 'success' -or $null -ne $Response.data) {
+        if ($Response.message -eq 'success' -or $null -ne $Response.data) {
             Write-Verbose 'Received response from CIF API'
-            # set InputObject to 'data' property of Invoke-RestMethod return object for further processing
-            $InputObject = $InputObject.data
+            # Check for Elasticsearch results, since they're different from sqlite returns for some reason. whut?
+            # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L121
+            if ($Response.data -like '{"hits":{"hits":`[{"_source":*') {
+                $ElasticSearchResult = ConvertFrom-Json -InputObject $Response.data
+                if ($null -eq $ElasticSearchResult.hits.hits._source) {
+                    Write-Error -Message "CIF API call succeeded, but responded with incorrect Elasticsearch value: $Response"
+                    break
+                } else {
+                    # set InputObject to hits.hits._sourcedata' property of Invoke-RestMethod return object for further processing
+                    $InputObject = $ElasticSearchResult.hits.hits._source
+                }
+            } 
+            else {
+                # set InputObject to 'data' property of Invoke-RestMethod return object for further processing
+                $InputObject = $InputObject.data
+            }
+
         } 
         else {
-            Write-Error -Message "CIF API call succeeded, but responded with incorrect value: $Response"
+            Write-Error -Message "CIF API call succeeded, but response formatter got strange input: $Response"
             break
         }
         # if we made it this far, go ahead and setup stuff we'll need for processing
