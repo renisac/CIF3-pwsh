@@ -12,14 +12,14 @@ function Format-CIF3ApiResponse {
 
     begin { 
         
-        if ($Response.message -eq 'success' -or $null -ne $Response.data) {
+        if ($InputObject.message -eq 'success' -or $null -ne $InputObject.data) {
             Write-Verbose 'Received response from CIF API'
             # Check for Elasticsearch results, since they're different from sqlite returns for some reason. whut?
             # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L121
-            if ($Response.data -like '{"hits":{"hits":`[{"_source":*') {
-                $ElasticSearchResult = ConvertFrom-Json -InputObject $Response.data
+            if ($InputObject.data -is [string] -and $InputObject.data.StartsWith('{"hits":{"hits":[{"_source":') ) {
+                $ElasticSearchResult = ConvertFrom-Json -InputObject $InputObject.data
                 if ($null -eq $ElasticSearchResult.hits.hits._source) {
-                    Write-Error -Message "CIF API call succeeded, but responded with incorrect Elasticsearch value: $Response"
+                    Write-Error -Message "CIF API call succeeded, but responded with incorrect Elasticsearch value: $InputObject"
                     break
                 } else {
                     # set InputObject to hits.hits._sourcedata' property of Invoke-RestMethod return object for further processing
@@ -33,7 +33,7 @@ function Format-CIF3ApiResponse {
 
         } 
         else {
-            Write-Error -Message "CIF API call succeeded, but response formatter got strange input: $Response"
+            Write-Error -Message "CIF API call succeeded, but response formatter got strange input: $InputObject"
             break
         }
         # if we made it this far, go ahead and setup stuff we'll need for processing
@@ -51,6 +51,11 @@ function Format-CIF3ApiResponse {
                     Write-Output ([int]$Response)
                 } 
                 catch { Write-Output $Response }
+                break
+            }
+            # some functions return a True/False, so just return that if it's the case
+            elseif ($Response -is [bool]) {
+                Write-Output $Response
                 break
             }
 
