@@ -22,8 +22,21 @@ function Format-CIF3ApiResponse {
         }
         elseif ($Response.message -eq 'success' -or $null -ne $Response.data) {
             Write-Verbose 'Received response from CIF API'
-            # set InputObject to 'data' property of Invoke-RestMethod return object for further processing
-            $InputObject = $InputObject.data
+            # check for Elasticsearch response
+            # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L121
+            if ($Response.data -is [string] -and $Response.data.StartsWith('{"hits":{"hits":[{"_source":')) {
+                $ElasticSearchResponse = ConvertFrom-Json -InputObject $Response.data
+                if ($null -eq $ElasticSearchResponse.hits.hits._source) {
+                    Write-Error -Message "CIF API call succeeded, but responded with incorrect Elasticsearch value: $Response"
+                    break
+                } else {
+                    # set InputObject to 'data.hits.hits._source' property of Invoke-RestMethod return object for further processing
+                    $InputObject = $ElasticSearchResponse.hits.hits._source
+                }
+            } else {
+                # set InputObject to 'data' property of Invoke-RestMethod return object for further processing
+                $InputObject = $InputObject.data
+            }
         } 
         else {
             Write-Error -Message "CIF API call succeeded, but responded with incorrect value: $Response"
@@ -36,9 +49,15 @@ function Format-CIF3ApiResponse {
     process {
         foreach ($Response in $InputObject) {
 
+            # do not return output on empty Elasticsearch response
+            # this matches SQLite when the responses are empty
+            # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L118
+            if ($Response -is [string] -and $Response -eq '{}') {
+                break
+            }
             # some functions return just an integer/str indicating how many server objects were affected
             # if that's the case, just return that
-            if ($Response -is [string] -or $Response -is [int]) {
+            elseif ($Response -is [string] -or $Response -is [int]) {
                 try { 
                     # try to cast to integer if we can. otherwise, just return the object
                     Write-Output ([int]$Response)
