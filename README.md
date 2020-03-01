@@ -99,7 +99,7 @@ Get-CIF3Indicator
 Get up to 500 indicator results that have a `Confidence` of 8 or greater:
 
 ```powershell
-Get-CIF3Indicator -Confidence 8 -ResultSet 500
+Get-CIF3Indicator -Confidence 8 -ResultSize 500
 ```
 
 Get all fqdn indicators reported in the last week that have a 'malware' or 'botnet' tag:

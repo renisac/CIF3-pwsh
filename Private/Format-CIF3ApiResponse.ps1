@@ -14,23 +14,21 @@ function Format-CIF3ApiResponse {
         
         if ($InputObject.message -eq 'success' -or $null -ne $InputObject.data) {
             Write-Verbose 'Received response from CIF API'
-            # Check for Elasticsearch results, since they're different from sqlite returns for some reason. whut?
+            # check for Elasticsearch response
             # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L121
-            if ($InputObject.data -is [string] -and $InputObject.data.StartsWith('{"hits":{"hits":[{"_source":') ) {
-                $ElasticSearchResult = ConvertFrom-Json -InputObject $InputObject.data
-                if ($null -eq $ElasticSearchResult.hits.hits._source) {
+            if ($InputObject.data -is [string] -and $InputObject.data.StartsWith('{"hits":{"hits":[{"_source":')) {
+                $ElasticSearchResponse = ConvertFrom-Json -InputObject $InputObject.data
+                if ($null -eq $ElasticSearchResponse.hits.hits._source) {
                     Write-Error -Message "CIF API call succeeded, but responded with incorrect Elasticsearch value: $InputObject"
                     break
                 } else {
-                    # set InputObject to hits.hits._sourcedata' property of Invoke-RestMethod return object for further processing
-                    $InputObject = $ElasticSearchResult.hits.hits._source
+                    # set InputObject to 'data.hits.hits._source' property of Invoke-RestMethod return object for further processing
+                    $InputObject = $ElasticSearchResponse.hits.hits._source
                 }
-            } 
-            else {
+            } else {
                 # set InputObject to 'data' property of Invoke-RestMethod return object for further processing
                 $InputObject = $InputObject.data
             }
-
         } 
         else {
             Write-Error -Message "CIF API call succeeded, but response formatter got strange input: $InputObject"
@@ -43,9 +41,15 @@ function Format-CIF3ApiResponse {
     process {
         foreach ($Response in $InputObject) {
 
+            # do not return output on empty Elasticsearch response
+            # this matches SQLite when the responses are empty
+            # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L118
+            if ($Response -is [string] -and $Response -eq '{}') {
+                break
+            }
             # some functions return just an integer/str indicating how many server objects were affected
             # if that's the case, just return that
-            if ($Response -is [string] -or $Response -is [int]) {
+            elseif ($Response -is [string] -or $Response -is [int]) {
                 try { 
                     # try to cast to integer if we can. otherwise, just return the object
                     Write-Output ([int]$Response)
