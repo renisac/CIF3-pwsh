@@ -113,7 +113,7 @@ function Get-CIF3Indicator {
     }
 
     process {
-        Write-Verbose 'Token listing from CIF API'
+        Write-Verbose 'Indicator listing from CIF API'
 
         $Params = @{
             Body    = $Body

@@ -12,22 +12,14 @@ function Format-CIF3ApiResponse {
 
     begin { 
         
-        if ($Response.status -eq 'failed') {
-            Write-Error -Message "Connected to CIF API, but got a failed status: $($Response.message)"
-            break
-        }
-        elseif ($Response.message -eq 'missing data') {
-            Write-Error -Message "CIF API call was missing some data: $Response"
-            break
-        }
-        elseif ($Response.message -eq 'success' -or $null -ne $Response.data) {
+        if ($InputObject.message -eq 'success' -or $null -ne $InputObject.data) {
             Write-Verbose 'Received response from CIF API'
             # check for Elasticsearch response
             # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L121
-            if ($Response.data -is [string] -and $Response.data.StartsWith('{"hits":{"hits":[{"_source":')) {
-                $ElasticSearchResponse = ConvertFrom-Json -InputObject $Response.data
+            if ($InputObject.data -is [string] -and $InputObject.data.StartsWith('{"hits":{"hits":[{"_source":')) {
+                $ElasticSearchResponse = ConvertFrom-Json -InputObject $InputObject.data
                 if ($null -eq $ElasticSearchResponse.hits.hits._source) {
-                    Write-Error -Message "CIF API call succeeded, but responded with incorrect Elasticsearch value: $Response"
+                    Write-Error -Message "CIF API call succeeded, but responded with incorrect Elasticsearch value: $InputObject"
                     break
                 } else {
                     # set InputObject to 'data.hits.hits._source' property of Invoke-RestMethod return object for further processing
@@ -39,7 +31,7 @@ function Format-CIF3ApiResponse {
             }
         } 
         else {
-            Write-Error -Message "CIF API call succeeded, but responded with incorrect value: $Response"
+            Write-Error -Message "CIF API call succeeded, but response formatter got strange input: $InputObject"
             break
         }
         # if we made it this far, go ahead and setup stuff we'll need for processing
@@ -63,6 +55,11 @@ function Format-CIF3ApiResponse {
                     Write-Output ([int]$Response)
                 } 
                 catch { Write-Output $Response }
+                break
+            }
+            # some functions return a True/False, so just return that if it's the case
+            elseif ($Response -is [bool]) {
+                Write-Output $Response
                 break
             }
 

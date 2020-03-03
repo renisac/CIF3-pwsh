@@ -94,7 +94,7 @@ function Set-CIF3TokenGroup {
         Write-Verbose 'Adding token to request'
         $Params.Token = $Token
 
-        if ($Force -or $PSCmdlet.ShouldProcess($Body.Values, 'Delete token')) {
+        if ($Force -or $PSCmdlet.ShouldProcess($Body.Values, 'Update token groups')) {
             $Response = Send-CIF3Api @Params -ErrorAction Stop
 
             if ($Raw) {

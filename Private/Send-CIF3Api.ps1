@@ -150,14 +150,24 @@ function Send-CIF3Api {
     
         # Check to see if we have confirmation that our API call failed.
         # (Responses with exception-generating status codes are handled in the "catch" block above - this one is for errors that don't generate exceptions)
-        if ($null -ne $Response -and $Response.message -ne 'success') {
-            $Response
+        if ($null -eq $Response) {
+            Write-Error -Message "Something went wrong. `$Response is `$null"
+        }
+        elseif ($Response -eq '') {
+            Write-Error -Message "CIF API call succeeded but response was empty"
+        }
+        elseif ($Response.status -eq 'failed') {
+            Write-Error -Message "Connected to CIF API, but got a failed status: $($Response.message)"
+        }
+        elseif ($Response.message -eq 'missing data') {
+            Write-Error -Message "CIF API call was missing some data: $Response"
+            break
         }
         elseif ($Response) {
             Write-Output $Response
         }
         else {
-            Write-Verbose "Something went wrong.  `$Response is `$null"
+            Write-Error "Something went wrong: Response is $Response"
         }
 
     }
