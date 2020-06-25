@@ -13,7 +13,7 @@ function Format-CIF3ApiResponse {
     begin { 
         
         if ($InputObject.message -eq 'success' -or $null -ne $InputObject.data) {
-            Write-Verbose 'Received response from CIF API'
+            Write-Verbose 'Parsing response from CIF API'
             # check for Elasticsearch response
             # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L121
             if ($InputObject.data -is [string] -and $InputObject.data.StartsWith('{"hits":{"hits":[{"_source":')) {
