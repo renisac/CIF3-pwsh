@@ -71,7 +71,7 @@ function Get-CIF3Indicator {
         [string[]]$Tag,
 
         [Alias('Limit')]
-        [int]$ResultSize = 100,
+        [int]$ResultSize = 500,
 
         [ValidateSet('ipv4', 'ipv6', 'fqdn', 'url', 'email', 'md5', 'sha1', 'sha256', 'sha512')]
         [string]$IType,

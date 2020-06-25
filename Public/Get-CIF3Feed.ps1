@@ -71,7 +71,7 @@ function Get-CIF3Feed {
         [string[]]$Tag,
 
         [Alias('Limit')]
-        [int]$ResultSize = 100,
+        [int]$ResultSize = 500,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('ipv4', 'ipv6', 'fqdn', 'url', 'email', 'md5', 'sha1', 'sha256', 'sha512')]
