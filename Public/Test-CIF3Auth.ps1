@@ -60,7 +60,6 @@ function Test-CIF3Auth {
 
         Write-Verbose 'Adding token to request'
         $Params.Token = $Token
-        Write-Verbose "Calling CIF API $Uri ..."
         
         try {
             $Response = Send-CIF3Api @Params -ErrorAction Stop

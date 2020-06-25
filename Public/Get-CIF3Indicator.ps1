@@ -123,7 +123,6 @@ function Get-CIF3Indicator {
 
         Write-Verbose 'Adding token to request'
         $Params.Token = $Token
-        Write-Verbose "Calling CIF API $Uri ..."
         
         $Response = Send-CIF3Api @Params -ErrorAction Stop
         
