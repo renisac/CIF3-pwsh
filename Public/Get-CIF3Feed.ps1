@@ -93,6 +93,13 @@ function Get-CIF3Feed {
         
         $Body = @{ }
 
+        # PSBoundParameters contains only params where value was supplied by caller, ie, does not contain
+        # default values. The following foreach loop adds all unbound params that have default values
+        foreach ($Key in $MyInvocation.MyCommand.Parameters.Keys) {
+            $Value = Get-Variable $Key -ValueOnly -ErrorAction SilentlyContinue
+            if ($null -ne $Value -and -not $PSBoundParameters.ContainsKey($Key)) { $PSBoundParameters[$Key] = $Value }
+        }
+
         if ($PSBoundParameters.ContainsKey('StartTime')) {
             # try to set datetime object to a string the API will like
             $StrStart = $StartTime.ToString("yyyy-MM-ddT00:00:00Z") # have to set start time HH:mm:ss to 00:00:00 or CIF doesn't like it
