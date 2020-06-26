@@ -93,7 +93,7 @@ function Add-CIF3Indicator {
     }
 
     process {
-        Write-Verbose 'Token listing from CIF API'
+        Write-Verbose 'Creating request body'
 
         $Params = @{
             Body    = $Body
@@ -103,7 +103,6 @@ function Add-CIF3Indicator {
 
         Write-Verbose 'Adding token to request'
         $Params.Token = $Token
-        Write-Verbose "Calling CIF API $Uri ..."
         
         $Response = Send-CIF3Api @Params -ErrorAction Stop
         

@@ -62,7 +62,7 @@ function Get-CIF3Token {
     }
 
     process {
-        Write-Verbose 'Token listing from CIF API'
+        Write-Verbose 'Creating request body'
 
         $Params = @{
             Body    = $Body

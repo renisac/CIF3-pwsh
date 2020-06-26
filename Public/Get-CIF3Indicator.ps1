@@ -71,7 +71,7 @@ function Get-CIF3Indicator {
         [string[]]$Tag,
 
         [Alias('Limit')]
-        [int]$ResultSize = 100,
+        [int]$ResultSize = 500,
 
         [ValidateSet('ipv4', 'ipv6', 'fqdn', 'url', 'email', 'md5', 'sha1', 'sha256', 'sha512')]
         [string]$IType,
@@ -91,6 +91,13 @@ function Get-CIF3Indicator {
         $Uri += '/indicators'
         
         $Body = @{ }
+
+        # PSBoundParameters contains only params where value was supplied by caller, ie, does not contain
+        # default values. The following foreach loop adds all unbound params that have default values
+        foreach ($Key in $MyInvocation.MyCommand.Parameters.Keys) {
+            $Value = Get-Variable $Key -ValueOnly -ErrorAction SilentlyContinue
+            if ($null -ne $Value -and -not $PSBoundParameters.ContainsKey($Key)) { $PSBoundParameters[$Key] = $Value }
+        }
 
         if ($PSBoundParameters.ContainsKey('StartTime')) {
             # try to set datetime object to a string the API will like
@@ -123,7 +130,6 @@ function Get-CIF3Indicator {
 
         Write-Verbose 'Adding token to request'
         $Params.Token = $Token
-        Write-Verbose "Calling CIF API $Uri ..."
         
         $Response = Send-CIF3Api @Params -ErrorAction Stop
         

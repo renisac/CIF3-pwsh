@@ -103,10 +103,18 @@ function Send-CIF3Api {
 
         try {
             $Response = $null
-            $HashToStr = $Params | Out-String
-            Write-Verbose "Calling CIF API $Uri with params $HashToStr ..."
+            # https://stackoverflow.com/a/30415506
+            $ExpandedHash = $Params | Format-Table Name, @{n='Value';e={
+                if ($_.Value -is [hashtable]) {
+                  $ht = $_.Value
+                  $a = $ht.Keys | ForEach-Object { if ($ht[$_] -ne '') { '{0}={1}' -f $_, $ht[$_] } }
+                  '{{{0}}}' -f ($a -join ', ')
+                } 
+                else { $_.Value }
+                }} | Out-String
+            Write-Verbose "Calling CIF API $Uri with params $ExpandedHash ..."
             $Response = Invoke-RestMethod @Params -Headers $Headers -Method $Method -ContentType 'application/json'
-    
+            Write-Verbose 'Received response from CIF API'
         }
         catch {
             # (HTTP 429 is "Too Many Requests")
