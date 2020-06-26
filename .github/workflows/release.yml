@@ -16,5 +16,5 @@ jobs:
         PSGALLERY_TOKEN: ${{secrets.PSGALLERY_TOKEN}}
         RELEASE_NOTES: ${{github.event.release.body}}
         RELEASE_VERSION: ${{github.event.release.tag_name}}
-      run: .github\workflows\Deploy-Module.ps1
+      run: ./.github/workflows/Deploy-Module.ps1
       shell: pwsh
