@@ -1,0 +1,20 @@
+name: 'Release Validation'
+
+on: 
+  release:
+    types: published
+jobs:
+  deploy-module-1:
+    name: Module Deployment
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    with:
+      path: CIF3
+    - name: Deploy to PSGallery
+      env:
+        PSGALLERY_TOKEN: ${{secrets.PSGALLERY_TOKEN}}
+        RELEASE_NOTES: ${{github.event.release.body}}
+        RELEASE_VERSION: ${{github.event.release.tag_name}}
+      run: .github\workflows\Deploy-Module.ps1
+      shell: pwsh
