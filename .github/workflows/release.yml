@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     with:
-      path: CIF3
+      path: 'CIF3'
     - name: Deploy to PSGallery
       env:
         PSGALLERY_TOKEN: ${{secrets.PSGALLERY_TOKEN}}
