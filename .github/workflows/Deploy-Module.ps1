@@ -1,11 +1,18 @@
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
 $ReleaseNotes = $env:RELEASE_NOTES
+$RequiredModules = $env:REQUIRED_MODULES -join ','
 $ModuleVersion = ($env:RELEASE_VERSION) -replace 'v',''
 Write-Host "ModuleVersion: $ModuleVersion"
 
 $ManifestPath = Resolve-Path -Path "*\*.psd1"
 Write-Host "Manifest Path: $ManifestPath"
+
+if (-not [string]::IsNullOrWhiteSpace($RequiredModules)) {
+    Write-Host "Installing PreReq modules"
+    Install-Module $RequiredModules   
+}
+
 
 Update-ModuleManifest -ReleaseNotes $ReleaseNotes -Path $ManifestPath.Path -ModuleVersion $ModuleVersion -Verbose
 
