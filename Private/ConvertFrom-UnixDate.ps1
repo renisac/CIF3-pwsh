@@ -9,7 +9,7 @@ function ConvertFrom-UnixDate {
     begin { }
 
     process { 
-        if ($null -ne $Date -and $Date -ne '') {
+        if (-not [string]::IsNullOrWhiteSpace($Date)) {
             Write-Output ([timezone]::CurrentTimeZone.ToLocalTime(([datetime]'1/1/1970').AddSeconds($Date)))
         }  
     }

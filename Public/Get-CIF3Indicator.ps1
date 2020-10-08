@@ -31,7 +31,8 @@ function Get-CIF3Indicator {
     .PARAMETER Confidence
         Confidence value to pass to the API call to narrow down the search server-side. Only indicators >= to this value will be returned.
     .PARAMETER Provider
-        Provider value to pass to the API call to narrow down the search server-side. Only indicators matching the provider will be returned.
+        Provider(s) to pass to the API call to narrow down the search server-side. Only indicators matching the provider(s) will be returned.
+        Exclude a provider by prepending it with an exclamation mark (e.g.: !csirtg.io, !otherprovider.tld)
     .PARAMETER Group
         Group value to pass to the API call to narrow down the search server-side. Only indicators matching the group will be returned.
     .PARAMETER Tag
@@ -64,7 +65,7 @@ function Get-CIF3Indicator {
 
         [float]$Confidence,
 
-        [string]$Provider,
+        [string[]]$Provider,
 
         [string]$Group,
 
@@ -111,7 +112,7 @@ function Get-CIF3Indicator {
             'NoLog'         { $Body.Add('nolog', $true) }
             'Indicator'     { $Body.Add('q', $Indicator) }
             'Confidence'    { $Body.Add('confidence', $Confidence) }
-            'Provider'      { $Body.Add('provider', $Provider) }
+            'Provider'      { $Body.Add('provider', $Provider -join ',') }
             'Group'         { $Body.Add('group', $Group) }
             'Tag'           { $Body.Add('tags', $Tag -join ',') }
             'ResultSize'    { $Body.Add('limit', $ResultSize) }

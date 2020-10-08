@@ -10,10 +10,11 @@ function Format-CIF3ApiResponse {
         [object]$InputObject
     )
 
-    begin { 
-        
-        if ($InputObject.message -eq 'success' -or $null -ne $InputObject.data) {
-            Write-Verbose 'Parsing response from CIF API'
+    begin {
+
+        Write-Verbose 'Formatting response from CIF API'
+        $StopWatch = [System.Diagnostics.Stopwatch]::StartNew()
+        if ($null -ne $InputObject.data -or $InputObject.message -eq 'success') {
             # check for Elasticsearch response
             # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L121
             if ($InputObject.data -is [string] -and $InputObject.data.StartsWith('{"hits":{"hits":[{"_source":')) {
@@ -39,8 +40,9 @@ function Format-CIF3ApiResponse {
     }
 
     process {
-        foreach ($Response in $InputObject) {
 
+        foreach ($Response in $InputObject) {
+            
             # do not return output on empty Elasticsearch response
             # this matches SQLite when the responses are empty
             # https://github.com/csirtgadgets/cifsdk-py-v3/blob/a659e84c63ff097942ed8e549340107c66886db6/cifsdk/client/http.py#L118
@@ -62,7 +64,7 @@ function Format-CIF3ApiResponse {
                 Write-Output $Response
                 break
             }
-
+            
             # build FormattedResponse output hashtable and begin populating it with keys/values
             $FormattedResponse = @{ PSTypeName = 'CIF3.ApiResponse' }
 
@@ -71,7 +73,7 @@ function Format-CIF3ApiResponse {
                 'firsttime'         { $FormattedResponse.Add('FirstTime', (ConvertFrom-PythonDate -Date $Response.firsttime)) }
                 'lasttime'          { $FormattedResponse.Add('LastTime', (ConvertFrom-PythonDate -Date $Response.lasttime)) }
                 'expires'           { $FormattedResponse.Add('Expires', (ConvertFrom-PythonDate -Date $Response.expires)) }
-                'last_activity_at'  { $FormattedResponse.Add('LastActivityTime', (ConvertFrom-UnixDate -Date $Response.last_activity_at)) }
+                'last_activity_at'  { $FormattedResponse.Add('LastActivityTime', (ConvertFrom-PythonDate -Date $Response.last_activity_at)) }
                 'tags'              { $FormattedResponse.Add('Tag', $Response.tags -split ',') }
                 'tlp'               { $FormattedResponse.Add('TLP', $Response.tlp) }
                 'itype'             { $FormattedResponse.Add('IType', $Response.itype) }
@@ -92,7 +94,10 @@ function Format-CIF3ApiResponse {
             # convert hashtable to PSCustomObject and send to output
             New-Object -TypeName pscustomobject -Property $FormattedResponse
         }
+
+        $StopWatch.Stop()
+        Write-Verbose 'Finished formatting response from CIF API'
     }
 
-    end { }
+    end { Write-Verbose "Processing took $($StopWatch.Elapsed.TotalMilliseconds) milliseconds to run" }
 }
