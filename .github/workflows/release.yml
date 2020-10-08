@@ -16,5 +16,6 @@ jobs:
         PSGALLERY_TOKEN: ${{secrets.PSGALLERY_TOKEN}}
         RELEASE_NOTES: ${{github.event.release.body}}
         RELEASE_VERSION: ${{github.event.release.tag_name}}
+        REQUIRED_MODULES: 'powershell-yaml'
       run: pwd; ls; CIF3/.github/workflows/Deploy-Module.ps1
       shell: pwsh
