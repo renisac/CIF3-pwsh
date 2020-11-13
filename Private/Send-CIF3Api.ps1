@@ -135,9 +135,6 @@ function Send-CIF3Api {
                 Send-CIF3Api @PSBoundParameters
     
             }
-            elseif ($_.Exception.Response.StatusCode -eq 400) {
-                Write-Warning -Exception $_.Exception -Message 'Server returned 400. Invalid search?'
-            }
             elseif ($_.Exception.Response.StatusCode -eq 401) {
                 Write-Error -Exception $_.Exception -Message 'Server returned 401 Unauthorized. Check your token?'
             }
@@ -149,10 +146,12 @@ function Send-CIF3Api {
             }
             elseif ($null -ne $_.ErrorDetails.Message -and $_.ErrorDetails.Message -ne '') {
                 # Convert the error-message to an object. (Invoke-RestMethod will not return data by-default if a 4xx/5xx status code is generated.)
-                $_.ErrorDetails.Message
+                $Message = $_.ErrorDetails.Message | ConvertFrom-Json | Select-Object -ExpandProperty 'message'
+                Write-Error -Exception $_.Exception -Message "Server returned $($_.Exception.Response.StatusCode.Value__). $($Message)"
             }
             else {
-                Write-Error -Exception $_.Exception -Message "CIFv3 API call failed: $_. Check remote Uri?"
+                Write-Error -Exception $_.Exception -Message "Server returned $($_.Exception.Response.StatusCode.Value__). 
+                CIFv3 API call failed: $_. Check remote Uri?"
             }
         }
     

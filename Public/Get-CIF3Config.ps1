@@ -51,8 +51,18 @@ function Get-CIF3Config {
             @{l = 'Proxy'; e = { $_.client.proxy } },
             @{l = 'Uri'; e = { Decrypt $_.client.remote } },
             @{l = 'Token'; e = { Decrypt $_.client.token } },
+            @{l = 'ReadToken'; e = { Decrypt $_.client.read_token } },
             @{l = 'ForceVerbose'; e = { $_.client.force_verbose } },
             @{l = 'NoVerifySsl'; e = { $_.client.no_verify_ssl } }
+
+        # yml file can use 'token' or 'read_token' as name; if no 'token' property, look for 'read_token'
+        if ($null -eq $TempObj.Token -and $null -ne $TempObj.ReadToken) {
+            $TempObj.Token = $TempObj.ReadToken
+        }
+        # backfill ReadToken prop if it's empty
+        if ($null -ne $TempObj.Token -and $null -eq $TempObj.ReadToken) {
+            $TempObj.ReadToken = $TempObj.Token
+        }
 
         # Nice oneliner to convert PSCustomObject to Hashtable: https://stackoverflow.com/questions/3740128/pscustomobject-to-hashtable
         $TempObj.PSObject.Properties | ForEach-Object -Begin { $h = @{ } } -Process { $h."$($_.Name)" = $_.Value } -End { $h } 

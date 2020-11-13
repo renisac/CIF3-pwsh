@@ -14,6 +14,9 @@ function Set-CIF3Config {
     .PARAMETER Token
         Specify a Token to use
 
+    .PARAMETER ReadToken
+        Specify a read Token to use (used if you have separate read/write tokens)
+
     .PARAMETER EncryptToken
         If set to true, serializes token to disk via DPAPI (Windows only)
 
@@ -47,6 +50,9 @@ function Set-CIF3Config {
         [string]$Token,
 
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
+        [string]$ReadToken,
+
+        [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
         [string]$Proxy,
 
         [Parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
@@ -66,6 +72,7 @@ function Set-CIF3Config {
         switch ($PSBoundParameters.Keys) {
             'Uri' { $Script:CIF3.Uri = $Uri }
             'Token' { $Script:CIF3.Token = $Token }
+            'ReadToken' { $Script:CIF3.ReadToken = $ReadToken }
             'Proxy' { $Script:CIF3.Proxy = $Proxy }
             'ForceVerbose' { $Script:CIF3.ForceVerbose = $ForceVerbose }
             'NoVerifySsl' { $Script:CIF3.NoVerifySsl = $NoVerifySsl }
@@ -86,6 +93,7 @@ function Set-CIF3Config {
         $OrderedCIFSettings.Add("client", [ordered]@{
                 "remote"        = "$($Script:CIF3.Uri)"
                 "token"         = "$(Encrypt $Script:CIF3.Token)"
+                "read_token"    = "$(Encrypt $Script:CIF3.ReadToken)"
                 "no_verify_ssl" = "$($Script:CIF3.NoVerifySsl)"
                 "force_verbose" = "$($Script:CIF3.ForceVerbose)"
                 "proxy"         = "$($Script:CIF3.Proxy)"
