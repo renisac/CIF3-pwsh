@@ -52,6 +52,7 @@ function Get-CIF3Config {
             @{l = 'Uri'; e = { Decrypt $_.client.remote } },
             @{l = 'Token'; e = { Decrypt $_.client.token } },
             @{l = 'ReadToken'; e = { Decrypt $_.client.read_token } },
+            @{l = 'WriteToken'; e = { Decrypt $_.client.write_token } },
             @{l = 'ForceVerbose'; e = { $_.client.force_verbose } },
             @{l = 'NoVerifySsl'; e = { $_.client.no_verify_ssl } }
 
@@ -62,6 +63,10 @@ function Get-CIF3Config {
         # backfill ReadToken prop if it's empty
         if ($null -ne $TempObj.Token -and $null -eq $TempObj.ReadToken) {
             $TempObj.ReadToken = $TempObj.Token
+        }
+        # backfill WriteToken prop if it's empty
+        if ($null -ne $TempObj.Token -and $null -eq $TempObj.WriteToken) {
+            $TempObj.WriteToken = $TempObj.Token
         }
 
         # Nice oneliner to convert PSCustomObject to Hashtable: https://stackoverflow.com/questions/3740128/pscustomobject-to-hashtable

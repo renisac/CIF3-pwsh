@@ -78,6 +78,11 @@ function Add-CIF3Indicator {
     begin {
         $Uri += '/indicators'
         
+        # use write token if available and a token is not explicitly passed
+        if ($Token -eq $Script:CIF3.Token -and $null -ne $Script:CIF3.WriteToken) {
+            $Token = $Script:CIF3.WriteToken
+        }
+
         $Body = @{ }
 
         switch($PSBoundParameters.Keys) {
