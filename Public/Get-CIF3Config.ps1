@@ -39,13 +39,19 @@ function Get-CIF3Config {
     else {
         function Decrypt {
             param($String)
-            if ($String -is [System.Security.SecureString]) {
-                [System.Runtime.InteropServices.marshal]::PtrToStringAuto(
-                    [System.Runtime.InteropServices.marshal]::SecureStringToBSTR(
-                        $String))
+            try {
+                $SecureString = ConvertTo-SecureString $String -ErrorAction Stop
+        
+                if  ($SecureString -is [System.Security.SecureString]) {
+                    [System.Runtime.InteropServices.marshal]::PtrToStringAuto(
+                        [System.Runtime.InteropServices.marshal]::SecureStringToBSTR(
+                            $SecureString))
+                }
             }
-            # If not a SecureString, just return the regular String value
-            else { $String }
+            catch {
+                # If not a SecureString, just return the regular String value
+                return $String
+            }
         }
         $TempObj = Get-Content -Path $Path -Raw | ConvertFrom-Yaml | Select-Object -Property `
             @{l = 'Proxy'; e = { $_.client.proxy } },
