@@ -44,9 +44,11 @@ function Test-CIF3Auth {
     begin {
         if ($VerifyWrite -eq $true) {
             $Uri += '/ping?write=1'
+            $Token = Select-ClientToken -Token $Token -RequestType 'Write'
         }
         else {
             $Uri += '/ping'
+            $Token = Select-ClientToken -Token $Token -RequestType 'Read'
         }
     }
 

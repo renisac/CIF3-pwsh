@@ -70,10 +70,6 @@ function Get-CIF3Config {
         if ($null -ne $TempObj.Token -and $null -eq $TempObj.ReadToken) {
             $TempObj.ReadToken = $TempObj.Token
         }
-        # backfill WriteToken prop if it's empty
-        if ($null -ne $TempObj.Token -and $null -eq $TempObj.WriteToken) {
-            $TempObj.WriteToken = $TempObj.Token
-        }
 
         # Nice oneliner to convert PSCustomObject to Hashtable: https://stackoverflow.com/questions/3740128/pscustomobject-to-hashtable
         $TempObj.PSObject.Properties | ForEach-Object -Begin { $h = @{ } } -Process { $h."$($_.Name)" = $_.Value } -End { $h } 
