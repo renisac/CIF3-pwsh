@@ -91,6 +91,8 @@ function Get-CIF3Indicator {
     begin {
         $Uri += '/indicators'
         
+        $Token = Select-ClientToken -Token $Token -RequestType 'Read'
+        
         $Body = @{ }
 
         # PSBoundParameters contains only params where value was supplied by caller, ie, does not contain

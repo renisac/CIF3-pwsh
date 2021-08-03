@@ -20,7 +20,7 @@ function Select-ClientToken {
     }
     else {
         if ($Script:CIF3.ReadToken -and $RequestType -eq "Read") {
-            # use the read token only if token is not configured
+            # use the read token if configured
             Write-Verbose "Selecting read_token"
             return $Script:CIF3.ReadToken
         }
