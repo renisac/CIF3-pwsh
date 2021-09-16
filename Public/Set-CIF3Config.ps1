@@ -87,7 +87,7 @@ function Set-CIF3Config {
 
         function Encrypt {
             param([string]$String)
-            if ($String -notlike '' -and $env:OS -eq 'Windows_NT' -and $EncryptToken -eq $true) {
+            if ($String -notlike '' -and [System.Environment]::OSVersion.Platform -eq 'Win32NT' -and $EncryptToken -eq $true) {
                 ConvertTo-SecureString -String $String -AsPlainText -Force | ConvertFrom-SecureString
             }
             # If we're not on Windows, just return the regular String value since it shouldn't be encrypted
