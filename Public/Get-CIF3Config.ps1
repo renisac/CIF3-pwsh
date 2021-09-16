@@ -40,12 +40,18 @@ function Get-CIF3Config {
         function Decrypt {
             param($String)
             try {
-                $SecureString = ConvertTo-SecureString $String -ErrorAction Stop
-        
-                if  ($SecureString -is [System.Security.SecureString]) {
-                    [System.Runtime.InteropServices.marshal]::PtrToStringAuto(
-                        [System.Runtime.InteropServices.marshal]::SecureStringToBSTR(
-                            $SecureString))
+                if ($String -notlike '' -and [System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                    $SecureString = ConvertTo-SecureString $String -ErrorAction Stop
+            
+                    if ($SecureString -is [System.Security.SecureString]) {
+                        [System.Runtime.InteropServices.marshal]::PtrToStringAuto(
+                            [System.Runtime.InteropServices.marshal]::SecureStringToBSTR(
+                                $SecureString))
+                    }
+                }
+                else {
+                    # If we're not on Windows, just return the regular String value since it shouldn't be encrypted/decrypted
+                    return $String
                 }
             }
             catch {
