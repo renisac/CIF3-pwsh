@@ -9,7 +9,7 @@
     RootModule        = 'CIF3.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.9.7'
+    ModuleVersion     = '0.9.8'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -105,7 +105,7 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Support lists/negations for Provider property on indicator/feed queries. 30% speedier response formatting.'
+            ReleaseNotes = 'Fixes encrypt/decrypt function causing failures on non-Windows OSes.'
 
         } # End of PSData hashtable
 
