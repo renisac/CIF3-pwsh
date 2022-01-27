@@ -9,7 +9,7 @@
     RootModule        = 'CIF3.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.9.8'
+    ModuleVersion     = '0.9.9'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -24,7 +24,7 @@
     CompanyName       = 'REN-ISAC'
 
     # Copyright statement for this module
-    Copyright         = '(c) 2020 REN-ISAC. All rights reserved.'
+    Copyright         = '(c) 2022 REN-ISAC. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description       = 'PowerShell module wrapper for the Collective Intelligence Framework (CIF) v3 API'
@@ -105,7 +105,7 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Fixes encrypt/decrypt function causing failures on non-Windows OSes.'
+            ReleaseNotes = 'Fixes potential timezone issue with StartTime and EndTime params.'
 
         } # End of PSData hashtable
 
