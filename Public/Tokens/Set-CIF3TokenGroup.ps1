@@ -74,7 +74,7 @@ function Set-CIF3TokenGroup {
             'Admin'     { $Body.Add('admin', $Admin) }
             'Revoked'   { $Body.Add('revoked', $Revoked) }
             'Expires'   { # try to set datetime object to a string the API will like
-                            $StrExpires = $Expires.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                            $StrExpires = $Expires.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
                             $Body.Add('expires', $StrExpires)
             }
         }
@@ -83,7 +83,7 @@ function Set-CIF3TokenGroup {
 
     process {
         
-        Write-Verbose 'Token removal on CIF API'
+        Write-Verbose 'Token update on CIF API'
         
         $Params = @{
             Body    = $Body

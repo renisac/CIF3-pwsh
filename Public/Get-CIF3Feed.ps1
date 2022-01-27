@@ -104,10 +104,7 @@ function Get-CIF3Feed {
         }
 
         if ($PSBoundParameters.ContainsKey('StartTime')) {
-            # try to set datetime object to a string the API will like
-            $StrStart = $StartTime.ToString("yyyy-MM-ddT00:00:00Z") # have to set start time HH:mm:ss to 00:00:00 or CIF doesn't like it
-            $StrEnd = $EndTime.ToString("yyyy-MM-ddT23:59:59Z") # have to set end time HH:mm:ss to 23:59:59 or CIF isn't happy
-            $ReportTime = "$StrStart,$StrEnd"
+            $ReportTime = ConvertTo-ReportTimeUTC -StartTime $StartTime -EndTime $EndTime
             $Body.Add('reporttime', $ReportTime) 
         }
 

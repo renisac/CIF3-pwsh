@@ -84,7 +84,7 @@ function New-CIF3Token {
             'Acl'       { $Body.Add('acl', $Acl) }
             'Revoked'   { $Body.Add('revoked', $Revoked) }
             'Expires'   { # try to set datetime object to a string the API will like
-                            $StrExpires = $Expires.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                            $StrExpires = $Expires.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
                             $Body.Add('expires', $StrExpires)
             }
         }
