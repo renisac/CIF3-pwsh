@@ -114,14 +114,27 @@ Add an indicator for 'baddomain.xyz' at a confidence of 7, a yellow TLP, and tag
 Add-CIF3Indicator -Indicator baddomain.xyz -Confidence 7 -Tag malware -TLP yellow
 ```
 
+Search for the indicator `44.227.178.5` and include any matching parent CIDRs that are known. Results are sorted by confidence highest to lowest, with any equal-confidence indicators being further sorted by reporttime oldest to newest before being returned:
+
+```powershell
+Get-CIF3Indicator -Indicator '44.227.178.5' -IncludeRelatives -Sort '-confidence', 'reporttime'
+```
+
 ### Feeds
 
-Feeds are aggregated and filtered datasets that have had whitelists applied before being returned. Indicator type is the only mandatory parameter when generating a feed.
+Feeds are aggregated, deduplicated, and filtered datasets that have had allowlists applied before being returned. Indicator type is the only mandatory parameter when generating a feed.
 
 Get a feed of all fqdn indicators with a confidence of 7.5 or greater:
 
 ```powershell
 Get-CIF3Feed -IType fqdn -Confidence 7.5
+```
+
+Get a feed of all md5 indicators with a confidence of 9 or greater tagged as 'malware.' 
+Additionally, add the `?apiParam=paramValue` string to the final REST request:
+
+```powershell
+Get-CIF3Feed -IType md5 -Confidence 9 -Tag 'malware' -ExtraParams @{ 'apiParam' = 'paramValue' }
 ```
 
 # Acknowledgments
