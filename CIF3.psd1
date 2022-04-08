@@ -9,7 +9,7 @@
     RootModule        = 'CIF3.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.9.9'
+    ModuleVersion     = '1.0.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -105,7 +105,7 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Fixes potential timezone issue with StartTime and EndTime params.'
+            ReleaseNotes = 'Adds new params to Get-CIF3Indicator cmdlet.'
 
         } # End of PSData hashtable
 
