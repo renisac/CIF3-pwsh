@@ -104,7 +104,7 @@ function Send-CIF3Api {
         try {
             $Response = $null
             # https://stackoverflow.com/a/30415506
-            $ExpandedHash = $Params | Format-Table Name, @{n='Value';e={
+            $ExpandedHash = $Body | Format-Table Name, @{n='Value';e={
                 if ($_.Value -is [hashtable]) {
                   $ht = $_.Value
                   $a = $ht.Keys | ForEach-Object { if ($ht[$_] -ne '') { '{0}={1}' -f $_, $ht[$_] } }
