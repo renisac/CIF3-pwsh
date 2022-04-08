@@ -64,6 +64,7 @@ function Get-CIF3Indicator {
         parent/child CIDRs for IPs.
     .PARAMETER Sort
         Backend fields by which to sort server-side before returning results.
+        Defaults to '-reporttime', '-lasttime' which primary sorts reporttime DESC and secondary sorts lasttime DESC.
     .PARAMETER ExtraParams
         Additional, optional URL params for which there is not a defined cmdlet param that will be passed to CIF's API.
     .PARAMETER Raw
