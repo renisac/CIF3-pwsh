@@ -1,7 +1,7 @@
 function Get-CIF3Feed {
     <#
     .SYNOPSIS
-        Gets indicator feed from CIF3 API. A feed is a filtered data-set that's been aggregated and had a whitelisted applied.
+        Gets indicator feed from CIF3 API. A feed is a filtered data-set that's been aggregated, deduplicated, and filtered through an allowlist.
     .DESCRIPTION
         This cmdlet issues GET to the CIF API /feed endpoint to generate an indicator feed from the CIF instance. Targeted results can be returned by 
         specifying parameters.
@@ -18,6 +18,11 @@ function Get-CIF3Feed {
         # Get a very high-confidence feed of 'malware' or 'botnet' tagged ipv4 indicators over the last 24 hours
         PS C:\> Get-CIF3Feed -IType ipv4 -Confidence 9 -Tag malware, botnet -StartTime (Get-Date).AddDays(-1) -EndTime (Get-Date)
 
+        # Return feed of high-confidence md5 hashes tagged as 'malware,' 
+        # and include additional param in API call which will be added to URL parameter as "?testKey=testValue"
+        # This enables passing URL parameters supported by the REST API that may not have explicit params supported by this module.
+        PS C:\> Get-CIF3Feed -Confidence 8 -Tag malware -IType md5 -ExtraParams @{ 'testKey' = 'testValue' }
+
     .OUTPUTS
         A an array of PSCustomObjects from CIF instance's API composed of indicator properties.
         Properties of each PSCustomObject are itype, cc, timezone, protocol, message, id, city, latitude, longitude, indicator, group, provider, tags,
@@ -30,6 +35,7 @@ function Get-CIF3Feed {
         Indicator value to pass to the API call to narrow down the search server-side.
     .PARAMETER Confidence
         Confidence value to pass to the API call to narrow down the search server-side. Only indicators >= to this value will be returned.
+        Defaults to 5.
     .PARAMETER Provider
         Provider(s) to pass to the API call to narrow down the search server-side. Only indicators matching the provider(s) will be returned.
         Exclude a provider by prepending it with an exclamation mark (e.g.: !csirtg.io, !otherprovider.tld)
@@ -45,6 +51,8 @@ function Get-CIF3Feed {
         Limits matches to those first reported on or after this time. Must be set with EndTime. If not set, server-side only gets last 3 weeks.
     .PARAMETER EndTime
         Limits matches to those first reported on or before this time. Must be set with StartTime. If not set, server-side only gets last 3 weeks.
+    .PARAMETER ExtraParams
+        Additional, optional URL params for which there is not a defined cmdlet param that will be passed to CIF's API.
     .PARAMETER NoLog
         Doesn't log the query on the CIF instance.
     .PARAMETER Raw
@@ -63,7 +71,7 @@ function Get-CIF3Feed {
         [Alias('Q')]
         [string]$Indicator,
 
-        [float]$Confidence,
+        [float]$Confidence = 5,
 
         [string[]]$Provider,
 
@@ -75,7 +83,7 @@ function Get-CIF3Feed {
         [int]$ResultSize = 50000,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('ipv4', 'ipv6', 'fqdn', 'url', 'email', 'md5', 'sha1', 'sha256', 'sha512')]
+        [ValidateSet('ipv4', 'ipv6', 'fqdn', 'url', 'email', 'md5', 'sha1', 'sha256', 'sha512', 'ssdeep')]
         [string]$IType,
 
         [Parameter(ParameterSetName = 'ReportTime', Mandatory = $true)]
@@ -83,6 +91,8 @@ function Get-CIF3Feed {
 
         [Parameter(ParameterSetName = 'ReportTime', Mandatory = $true)]
         [datetime]$EndTime,
+
+        [hashtable]$ExtraParams,
 
         [switch]$NoLog,
 
@@ -96,11 +106,16 @@ function Get-CIF3Feed {
 
         $Body = @{ }
 
-        # PSBoundParameters contains only params where value was supplied by caller, ie, does not contain
-        # default values. The following foreach loop adds all unbound params that have default values
+        # PSBoundParameters contains only params where value was supplied by caller, ie, does not 
+        # contain default values. The following foreach loop adds all unbound params that have 
+        # default values. Exclude SwitchParams so we don't add them as $false since that's redundant
         foreach ($Key in $MyInvocation.MyCommand.Parameters.Keys) {
             $Value = Get-Variable $Key -ValueOnly -ErrorAction SilentlyContinue
-            if ($null -ne $Value -and -not $PSBoundParameters.ContainsKey($Key)) { $PSBoundParameters[$Key] = $Value }
+            if ($null -ne $Value -and -not $PSBoundParameters.ContainsKey($Key) `
+                -and ($Value -isNot [System.Management.Automation.SwitchParameter]) `
+                -and -not ([String]::IsNullOrWhiteSpace($Value))) { 
+                $PSBoundParameters[$Key] = $Value 
+            }
         }
 
         if ($PSBoundParameters.ContainsKey('StartTime')) {
@@ -109,14 +124,18 @@ function Get-CIF3Feed {
         }
 
         switch($PSBoundParameters.Keys) {
-            'NoLog'         { $Body.Add('nolog', $true) }
-            'Indicator'     { $Body.Add('q', $Indicator) }
-            'Confidence'    { $Body.Add('confidence', $Confidence) }
-            'Provider'      { $Body.Add('provider', $Provider -join ',') }
-            'Group'         { $Body.Add('group', $Group) }
-            'Tag'           { $Body.Add('tags', $Tag -join ',') }
-            'ResultSize'    { $Body.Add('limit', $ResultSize) }
-            'IType'         { $Body.Add('itype', $IType) }
+            'NoLog'             { $Body.Add('nolog', $true) }
+            'Indicator'         { $Body.Add('q', $Indicator) }
+            'Confidence'        { $Body.Add('confidence', $Confidence) }
+            'Provider'          { $Body.Add('provider', $Provider -join ',') }
+            'Group'             { $Body.Add('group', $Group) }
+            'Tag'               { $Body.Add('tags', $Tag -join ',') }
+            'ResultSize'        { $Body.Add('limit', $ResultSize) }
+            'IType'             { $Body.Add('itype', $IType) }
+            'ExtraParams'       { foreach ($Param in $ExtraParams.GetEnumerator()) {
+                                  $Body.Add($Param.Key, $Param.Value)
+                } 
+            }
         }
     }
 
