@@ -151,7 +151,7 @@ function Get-CIF3Indicator {
             'IType'             { $Body.Add('itype', $IType) }
             'IncludeRelatives'  { $Body.Add('find_relatives', $IncludeRelatives) }
             'ExtraParams'       { foreach ($Param in $ExtraParams.GetEnumerator()) {
-                                  $Body.Add($Param.Key, $Param.Value)
+                                  $Body.Add($Param.Key.ToLower(), $Param.Value)
                 } 
             }
         }

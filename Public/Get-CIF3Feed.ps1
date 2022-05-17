@@ -133,7 +133,7 @@ function Get-CIF3Feed {
             'ResultSize'        { $Body.Add('limit', $ResultSize) }
             'IType'             { $Body.Add('itype', $IType) }
             'ExtraParams'       { foreach ($Param in $ExtraParams.GetEnumerator()) {
-                                  $Body.Add($Param.Key, $Param.Value)
+                                  $Body.Add($Param.Key.ToLower(), $Param.Value)
                 } 
             }
         }
