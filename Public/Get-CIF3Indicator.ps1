@@ -27,7 +27,7 @@ function Get-CIF3Indicator {
         # Return any results for specified indicator, and include additional param in API call which
         # will be added to URL parameter as "?testKey=testValue"
         # This enables passing URL parameters supported by the REST API that may not have explicit params supported by this module.
-        PS C:\> Get-CIF3Indicator -Indicator 'bad.tld' -ExtraParams @{ 'testKey' = 'testValue' }
+        PS C:\> Get-CIF3Indicator -Indicator 'bad.tld' -ExtraParams @{ 'tlp' = 'green' }
 
     .OUTPUTS
         A an array of PSCustomObjects from CIF instance's API composed of indicator properties.
