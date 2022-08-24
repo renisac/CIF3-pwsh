@@ -108,10 +108,10 @@ Get all fqdn indicators reported in the last week that have a 'malware' or 'botn
 Get-CIF3Indicator -IType fqdn -StartTime (Get-Date).AddDays(-7) -EndTime (Get-Date) -Tag malware, botnet
 ```
 
-Add an indicator for 'baddomain.xyz' at a confidence of 7, a yellow TLP, and tagged as 'malware'
+Add an indicator for 'baddomain.xyz' at a confidence of 7, an amber TLP, and tagged as 'malware'
 
 ```powershell
-Add-CIF3Indicator -Indicator baddomain.xyz -Confidence 7 -Tag malware -TLP yellow
+Add-CIF3Indicator -Indicator baddomain.xyz -Confidence 7 -Tag malware -TLP amber
 ```
 
 Search for the indicator `44.227.178.5` and include any matching parent CIDRs that are known. Results are sorted by confidence highest to lowest, with any equal-confidence indicators being further sorted by reporttime oldest to newest before being returned:

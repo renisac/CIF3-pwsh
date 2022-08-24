@@ -6,7 +6,7 @@ function Add-CIF3Indicator {
         This cmdlet issues POST to the CIF API /indicators endpoint to add an indicator on the CIF instance. 
     .EXAMPLE
         # Add an indicator with current session token
-        PS C:\> Add-CIF3Indicator -Indicator baddomain.xyz -Confidence 7 -Tag malware -TLP yellow
+        PS C:\> Add-CIF3Indicator -Indicator baddomain.xyz -Confidence 7 -Tag malware -TLP amber
         
         # Add an indicator using a specified CIF API URI and specify its protocol
         PS C:\> Add-CIF3Indicator -Uri http://cif.domain.local -Indicator baddomain.xyz -Confidence 8 -Tag botnet -TLP green -Protocol UDP
