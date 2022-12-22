@@ -39,6 +39,9 @@ function Get-CIF3Indicator {
         The Base Uri to use for the CIF instance API (uses session Uri if not specified).
     .PARAMETER Indicator
         Indicator value to pass to the API call to narrow down the search server-side.
+    .PARAMETER Asn
+        Autonomous System Number value to pass to the API call to narrow down the search server-side. Only indicators with a matching ASN will be returned.
+        Since ASNs are only stored on IP addresses, this effectively also filters indicator types to only include IP addresses.
     .PARAMETER Confidence
         Confidence value to pass to the API call to narrow down the search server-side. Only indicators >= to this value will be returned.
         Defaults to 5.
@@ -84,6 +87,8 @@ function Get-CIF3Indicator {
         [string]$Indicator,
 
         [float]$Confidence = 5,
+
+        [uint32]$Asn,
 
         [string[]]$Provider,
 
@@ -143,6 +148,7 @@ function Get-CIF3Indicator {
             'NoLog'             { $Body.Add('nolog', $NoLog) }
             'Indicator'         { $Body.Add('q', $Indicator) }
             'Confidence'        { $Body.Add('confidence', $Confidence) }
+            'Asn'               { $Body.Add('asn', $Asn) }
             'Provider'          { $Body.Add('provider', $Provider -join ',') }
             'Group'             { $Body.Add('group', $Group) }
             'Tag'               { $Body.Add('tags', $Tag -join ',') }

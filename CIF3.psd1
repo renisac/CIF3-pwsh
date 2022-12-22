@@ -9,7 +9,7 @@
     RootModule        = 'CIF3.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '1.0.0'
+    ModuleVersion     = '1.0.1'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -105,7 +105,7 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Adds new params to Get-CIF3Indicator cmdlet.'
+            ReleaseNotes = 'Adds -Asn param to Get-CIF3Indicator cmdlet to filter by autonomous system number.'
 
         } # End of PSData hashtable
 
