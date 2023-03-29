@@ -88,7 +88,7 @@ function Get-CIF3Indicator {
 
         [float]$Confidence = 5,
 
-        [uint32]$Asn,
+        [nullable[uint32]]$Asn,
 
         [string[]]$Provider,
 
